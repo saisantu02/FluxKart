@@ -1,10 +1,20 @@
 const express = require("express");
-const routes = express.Router();
+const contactRoutes = express.Router();
 const contactService = require("../service/contact.service");
 
-routes.get("/contacts", async (req, res) => {
-  const data = await contactService.getAllContacts();
-  res.send(data);
+contactRoutes.get("/contacts", async (req, res) => {
+  const contacts = await contactService.getAllContacts();
+  res.send(contacts);
 });
 
-module.exports = routes;
+contactRoutes.get("/contacts/:id", async (req, res) => {
+  const contact = await contactService.getContactById(req.params.id);
+  res.send(contact);
+});
+
+contactRoutes.post("/identify", async (req, res) => {
+  const contact = await contactService.addContact(req.body);
+  res.send(contact);
+});
+
+module.exports = contactRoutes;

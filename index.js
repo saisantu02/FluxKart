@@ -1,13 +1,14 @@
 const express = require("express");
 const app = express();
 require("express-async-errors");
-const routes = require("./controllers/contact.controller");
+const contactRoutes = require("./controllers/contact.controller");
 
-app.use("/api", routes);
+app.use(express.json());
+app.use("/api", contactRoutes);
 // Global error handling
 app.use((err, req, res, next) => {
   console.log(err);
-  res.status(err.status || 500).send("Internal server error! ");
+  res.status(err.status || 500).send(JSON.stringify(err) || "Internal server error! ");
 });
 
 app.listen(3000, () => {
