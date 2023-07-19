@@ -1,17 +1,15 @@
 const express = require("express");
 const app = express();
-const connection = require("./database");
+require("express-async-errors");
+const routes = require("./controllers/contact.controller");
 
-
-app.get("/", (req, res) => {
-  connection
-    .query("SELECT * from Contact")
-    .then((data) => console.log(data))
-    .catch((err) => console.log(err));
-
-  res.send("Wassup in browser");
+app.use("/api", routes);
+// Global error handling
+app.use((err, req, res, next) => {
+  console.log(err);
+  res.status(err.status || 500).send("Internal server error! ");
 });
 
 app.listen(3000, () => {
-  console.log(`Application is running on: localhost:3000`);
+  console.log(`Application is running...`);
 });
