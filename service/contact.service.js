@@ -22,10 +22,16 @@ module.exports.addContact = async (body) => {
     "SELECT * FROM Contact WHERE phoneNumber = ? AND email = ? ORDER BY createdAt ASC",
     [body.phoneNumber, body.email]
   );
-  console.log("contactExists:",contactExists.length>0);
   if (existingContacts.length) {
-    if(!contactExists.length>0){
-      insertContact(body.phoneNumber,body.email,existingContacts[0].id,"secondory");
+    if (!contactExists.length > 0 && body.email && body.phoneNumber) {
+      insertContact(
+        body.phoneNumber,
+        body.email,
+        existingContacts[0].linkPrecedence == "primary"
+          ? existingContacts[0].id
+          : existingContacts[0].linkedId,
+        "secondary"
+      );
     }
 
     if (existingContacts[0].linkPrecedence === "secondary") {
@@ -53,17 +59,23 @@ module.exports.addContact = async (body) => {
       },
     };
   } else {
-    
-    
+    console.log("else insert");
+    let insertId = await insertContact(
+      body.phoneNumber,
+      body.email,
+      null,
+      "primary"
+    );
+    console.log("Insert Id in return ", insertId);
+    return {
+      contact: {
+        primaryContactId: insertId || null,
+        emails: [body.email],
+        phoneNumbers: [body.phoneNumber],
+        secondaryContactIds: [],
+      },
+    };
   }
-  return {
-    contact: {
-      primaryContactId: existingContacts[0]?.id || null,
-      emails: [],
-      phoneNumbers: [],
-      secondaryContactIds: [],
-    },
-  };
 };
 
 function extractUniqueValues(data) {
@@ -74,23 +86,22 @@ function extractUniqueValues(data) {
     uniqueEmails.add(item.email);
     uniquePhoneNumbers.add(item.phoneNumber);
   });
-  const secondaryContactIds = data.flatMap((item) =>
-    item.linkPrecedence === "secondary" ? item.id : []
-  );
+  const secondaryIds = data
+    .filter((item) => item.linkPrecedence === "secondary")
+    .map((item) => item.id);
 
   return {
     emails: Array.from(uniqueEmails),
     phoneNumbers: Array.from(uniquePhoneNumbers),
-    secondaryContactIds: secondaryContactIds,
+    secondaryContactIds: secondaryIds,
   };
 }
 
-async function insertContact (phoneNumber,email,linkedId,linkPrecedence) {
+async function insertContact(phoneNumber, email, linkedId, linkPrecedence) {
   const time = new Date();
-      const data = await sqlConnection.query(
-        "INSERT INTO Contact (phoneNumber, email,linkedId,linkPrecedence, createdAt, updatedAt) VALUES (?,?,?,?,?,?)",
-        [phoneNumber,email, linkedId,linkPrecedence, time, time]
-      );
-      console.log("Insert data :",data);
-
+  const data = await sqlConnection.query(
+    "INSERT INTO Contact (phoneNumber, email,linkedId,linkPrecedence, createdAt, updatedAt) VALUES (?,?,?,?,?,?)",
+    [phoneNumber, email, linkedId, linkPrecedence, time, time]
+  );
+  return data[0]?.insertId;
 }
