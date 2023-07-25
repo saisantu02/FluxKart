@@ -52,7 +52,6 @@ module.exports.addContact = async (body) => {
         [existingContacts[0].phoneNumber, existingContacts[0].email]
       );
     }
-    console.log("Exists", existingContacts);
 
     const { emails, phoneNumbers, secondaryContactIds } =
       extractUniqueValues(existingContacts);
@@ -66,14 +65,13 @@ module.exports.addContact = async (body) => {
       },
     };
   } else {
-    console.log("else insert");
     let insertId = await insertContact(
       body.phoneNumber,
       body.email,
       null,
       "primary"
     );
-    console.log("Insert Id in return ", insertId);
+
     return {
       contact: {
         primaryContactId: insertId || null,

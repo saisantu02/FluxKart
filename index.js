@@ -8,7 +8,9 @@ app.use("/api", contactRoutes);
 // Global error handling
 app.use((err, req, res, next) => {
   console.log(err);
-  res.status(err.status || 500).send(JSON.stringify(err) || "Internal server error! ");
+  res
+    .status(err.status || 500)
+    .send(JSON.stringify(err) || "Internal server error! ");
 });
 
 app.listen(3000, () => {
