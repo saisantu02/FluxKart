@@ -24,14 +24,21 @@ module.exports.addContact = async (body) => {
   );
   if (existingContacts.length) {
     if (!contactExists.length > 0 && body.email && body.phoneNumber) {
-      insertContact(
-        body.phoneNumber,
-        body.email,
-        existingContacts[0].linkPrecedence == "primary"
-          ? existingContacts[0].id
-          : existingContacts[0].linkedId,
-        "secondary"
-      );
+      if (existingContacts[1].linkPrecedence === "primary") {
+        await sqlConnection.query(
+          "UPDATE Contact SET linkPrecedence = 'secondary' where id = ?;",
+          [existingContacts[1].id]
+        );
+      } else {
+        insertContact(
+          body.phoneNumber,
+          body.email,
+          existingContacts[0].linkPrecedence == "primary"
+            ? existingContacts[0].id
+            : existingContacts[0].linkedId,
+          "secondary"
+        );
+      }
     }
 
     if (existingContacts[0].linkPrecedence === "secondary") {
