@@ -4,7 +4,7 @@ require("express-async-errors");
 const contactRoutes = require("./controllers/contact.controller");
 
 app.use(express.json());
-app.use("/api", contactRoutes);
+app.use("/", contactRoutes);
 // Global error handling
 app.use((err, req, res, next) => {
   console.log(err);
