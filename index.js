@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 require("express-async-errors");
+require("dotenv").config();
 const contactRoutes = require("./controllers/contact.controller");
 
 app.use(express.json());

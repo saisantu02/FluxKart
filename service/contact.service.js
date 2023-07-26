@@ -23,14 +23,16 @@ module.exports.addContact = async (body) => {
     [body.phoneNumber, body.email]
   );
   if (existingContacts.length) {
+    let insertId = null;
     if (!contactExists.length > 0 && body.email && body.phoneNumber) {
-      if (existingContacts[1].linkPrecedence === "primary") {
+      console.log("Inside null check");
+      if (existingContacts[1]?.linkPrecedence === "primary") {
         await sqlConnection.query(
           "UPDATE Contact SET linkPrecedence = 'secondary' where id = ?;",
           [existingContacts[1].id]
         );
       } else {
-        insertContact(
+          insertId = await insertContact(
           body.phoneNumber,
           body.email,
           existingContacts[0].linkPrecedence == "primary"
@@ -52,10 +54,16 @@ module.exports.addContact = async (body) => {
         [existingContacts[0].phoneNumber, existingContacts[0].email]
       );
     }
-
-    const { emails, phoneNumbers, secondaryContactIds } =
+    existingContacts.push({
+      id: insertId,
+      email: body.email,
+      phoneNumber: body.phoneNumber !== null ? body.phoneNumber.toString() : null,
+      linkPrecedence: "secondary"
+    })
+    console.log("Contacts",existingContacts);
+    let { emails, phoneNumbers, secondaryContactIds } =
       extractUniqueValues(existingContacts);
-
+    
     return {
       contact: {
         primaryContactId: existingContacts[0].id || null,
@@ -88,11 +96,11 @@ function extractUniqueValues(data) {
   const uniquePhoneNumbers = new Set();
 
   data.forEach((item) => {
-    uniqueEmails.add(item.email);
-    uniquePhoneNumbers.add(item.phoneNumber);
+    if (item.email !== null) uniqueEmails.add(item.email);
+    if (item.phoneNumber !== null) uniquePhoneNumbers.add(item.phoneNumber);
   });
   const secondaryIds = data
-    .filter((item) => item.linkPrecedence === "secondary")
+    .filter((item) => item.linkPrecedence === "secondary" && item.id !== null)
     .map((item) => item.id);
 
   return {

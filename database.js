@@ -1,9 +1,9 @@
 const sql = require("mysql2/promise");
 const connection = sql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "MIG20@home",
-  database: "fluxkart",
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
 });
 
 module.exports = connection;
