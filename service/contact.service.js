@@ -26,16 +26,19 @@ module.exports.addContact = async (body) => {
     let insertId = null;
     if (!contactExists.length > 0 && body.email && body.phoneNumber) {
       console.log("Inside null check");
-      if (existingContacts[1]?.linkPrecedence === "primary") {
+      let secondPrimaryId = existingContacts.find((item, index) => index > 0 && item.linkPrecedence === 'primary').id;
+      console.log("insert contact", secondPrimaryId);
+      if (secondPrimaryId) {
+        console.log("Second contact is primary 100");
         await sqlConnection.query(
-          "UPDATE Contact SET linkPrecedence = 'secondary' where id = ?;",
-          [existingContacts[1].id]
+          "UPDATE Contact SET linkPrecedence = 'secondary', linkedId = ? where id = ?;",
+          [existingContacts[0].id,secondPrimaryId]
         );
       } else {
           insertId = await insertContact(
           body.phoneNumber,
           body.email,
-          existingContacts[0].linkPrecedence == "primary"
+          existingContacts[0].linkPrecedence === "primary"
             ? existingContacts[0].id
             : existingContacts[0].linkedId,
           "secondary"
