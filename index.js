@@ -3,6 +3,7 @@ const app = express();
 require("express-async-errors");
 require("dotenv").config();
 const contactRoutes = require("./controllers/contact.controller");
+const port = process.env.PORT || 3000
 
 app.use(express.json());
 app.use("/", contactRoutes);
@@ -14,6 +15,6 @@ app.use((err, req, res, next) => {
     .send(JSON.stringify(err) || "Internal server error! ");
 });
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log(`Application is running...`);
 });

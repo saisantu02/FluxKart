@@ -2,6 +2,10 @@ const express = require("express");
 const contactRoutes = express.Router();
 const contactService = require("../service/contact.service");
 
+contactRoutes.get("/", async (req, res) => {
+  res.json({status: 200,message: "success",envStatus: process.env.ENV || "Fail"});
+});
+
 contactRoutes.get("/contacts", async (req, res) => {
   const contacts = await contactService.getAllContacts();
   res.send(contacts);
