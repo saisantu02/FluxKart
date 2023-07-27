@@ -26,7 +26,7 @@ module.exports.addContact = async (body) => {
     let insertId = null;
     if (!contactExists.length > 0 && body.email && body.phoneNumber) {
       console.log("Inside null check");
-      let secondPrimaryId = existingContacts.find((item, index) => index > 0 && item.linkPrecedence === 'primary').id;
+      let secondPrimaryId = existingContacts.find((item, index) => index > 0 && item.linkPrecedence === 'primary')?.id;
       console.log("insert contact", secondPrimaryId);
       if (secondPrimaryId) {
         console.log("Second contact is primary 100");
