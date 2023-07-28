@@ -19,14 +19,34 @@ We identify and keep track of a customer's identity across multiple purchases th
 
 ## Database details:
 
-A RDS MySQL database hosted in AWS is connected to the application
-Database name: Fluxkart
-Table name: Contact
+A RDS MySQL database hosted in AWS is connected to the application:
+* Database name: Fluxkart
+* Table name: Contact
 
 ## Deployment:
 
-Hosted on AWS fargate.
+* Hosted on AWS fargate.
+* Host URL: http://65.2.6.101:3000/
+* (Will be active for a week or two)
 
 ## Local Deploymnet:
 
-1. Clone the repostory
+1. Clone the repostory:
+   ```
+   git clone https://github.com/saisantu02/FluxKart.git
+   ```
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Create .env file in root and add the following:
+   ```
+   MYSQL_HOST=<Mysql_Host_URL>
+   MYSQL_USER=<Mysql_user>    
+   MYSQL_PASSWORD=<Mysql_password>
+   MYSQL_DATABASE=<Mysql_database>
+   ```
+4. Run Project:
+   ```
+   npm run start
+   ```
